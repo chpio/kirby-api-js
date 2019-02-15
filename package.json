@@ -1,0 +1,15 @@
+{
+  "name": "@getkirby/api-js",
+  "version": "1.0.0",
+  "description": "Javascript library for Kirby 3 API",
+  "license": "MIT",
+  "repository": "getkirby/api-js",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.esm.js",
+  "scripts": {
+    "build": "rollup --config"
+  },
+  "devDependencies": {
+    "rollup": "^1.1.2"
+  }
+}
