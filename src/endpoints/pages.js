@@ -1,7 +1,7 @@
 import api from "../api.js";
 
 export default {
-  async create(parent, data) {
+  create(parent, data) {
     if (parent === null || parent === "/") {
       return api.post("site/children", data);
     }
@@ -20,46 +20,48 @@ export default {
   link(id) {
     return "/" + this.url(id);
   },
-  async get(id, query) {
-    const page = await api.get(this.url(id), query);
-    if (Array.isArray(page.content) === true) {
-      page.content = {};
-    }
-    return page;
+  get(id, query) {
+    return api.get(this.url(id), query).then(page => {
+      if (Array.isArray(page.content) === true) {
+        page.content = {};
+      }
+      return page;
+    });
   },
-  async preview(id) {
-    const page = await this.get(id, { select: "previewUrl" });
-    return page.previewUrl;
+  preview(id) {
+    return this.get(id, { select: "previewUrl" }).then(page => {
+      return page.previewUrl;
+    });
   },
-  async update(id, data) {
+  update(id, data) {
     return api.patch(this.url(id), data);
   },
-  async children(id, query) {
+  children(id, query) {
     return api.post(this.url(id, "children/search"), query);
   },
-  async files(id, query) {
+  files(id, query) {
     return api.post(this.url(id, "files/search"), query);
   },
-  async delete(id, data) {
+  delete(id, data) {
     return api.delete(this.url(id), data);
   },
-  async slug(id, slug) {
+  slug(id, slug) {
     return api.patch(this.url(id, "slug"), { slug: slug });
   },
-  async title(id, title) {
+  title(id, title) {
     return api.patch(this.url(id, "title"), { title: title });
   },
-  async template(id, template) {
+  template(id, template) {
     return api.patch(this.url(id, "template"), { template: template });
   },
-  async search(parent, query) {
+  search(parent, query) {
     if (parent) {
       return api.post('pages/' + parent.replace('/', '+') + '/children/search?select=id,title,hasChildren', query);
     } else {
       return api.post('site/children/search?select=id,title,hasChildren', query);
     }
   },
-  async status(id, status, position) {
+  status(id, status, position) {
     return api.patch(this.url(id, "status"), {
       status: status,
       position: position

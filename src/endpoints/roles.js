@@ -1,10 +1,10 @@
 import api from "../api.js";
 
 export default {
-  async list() {
+  list() {
     return api.get("roles");
   },
-  async get(name) {
+  get(name) {
     return api.get("roles/" + name);
   }
 };

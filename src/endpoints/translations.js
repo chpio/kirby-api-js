@@ -1,17 +1,18 @@
 import api from "../api.js";
 
 export default {
-  async list() {
+  list() {
     return api.get("translations");
   },
-  async get(locale) {
+  get(locale) {
     return api.get("translations/" + locale);
   },
-  async options() {
-    const translations = await this.list();
-    return translations.data.map(translation => ({
-      value: translation.id,
-      text: translation.name
-    }));
+  options() {
+    return this.list().then(translation => {
+      return translations.data.map(translation => ({
+        value: translation.id,
+        text: translation.name
+      }));
+    });
   }
 };

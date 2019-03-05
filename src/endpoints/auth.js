@@ -1,20 +1,22 @@
 import api from "../api.js";
 
 export default {
-  async user() {
+  user() {
     return api.get("auth");
   },
-  async login(user) {
+  login(user) {
     let data = {
       long: user.remember || false,
       email: user.email,
       password: user.password
     };
 
-    const auth = await api.post("auth/login", data);
-    return auth.user;
+    return api.post("auth/login", data).then(auth => {
+      return auth.user;
+    });
+    
   },
-  async logout() {
+  logout() {
     return api.post("auth/logout");
   }
 };

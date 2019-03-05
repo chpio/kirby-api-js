@@ -87,36 +87,39 @@
   };
 
   var auth = {
-    async user() {
+    user() {
       return api.get("auth");
     },
-    async login(user) {
+    login(user) {
       let data = {
         long: user.remember || false,
         email: user.email,
         password: user.password
       };
 
-      const auth = await api.post("auth/login", data);
-      return auth.user;
+      return api.post("auth/login", data).then(auth => {
+        return auth.user;
+      });
+      
     },
-    async logout() {
+    logout() {
       return api.post("auth/logout");
     }
   };
 
   var files = {
-    async get(parent, filename, query) {
-      const file = await api.get(this.url(parent, filename), query);
-      if (Array.isArray(file.content) === true) {
-        file.content = {};
-      }
-      return file;
+    get(parent, filename, query) {
+      return api.get(this.url(parent, filename), query).then(file => {
+        if (Array.isArray(file.content) === true) {
+          file.content = {};
+        }
+        return file;
+      });
     },
-    async update(parent, filename, data) {
+    update(parent, filename, data) {
       return api.patch(this.url(parent, filename), data);
     },
-    async rename(parent, filename, to) {
+    rename(parent, filename, to) {
       return api.patch(this.url(parent, filename, "name"), {
         name: to
       });
@@ -130,16 +133,16 @@
 
       return url;
     },
-    async link(parent, filename, path) {
+    link(parent, filename, path) {
       return "/" + this.url(parent, filename, path);
     },
-    async delete(parent, filename) {
+    delete(parent, filename) {
       return api.delete(this.url(parent, filename));
     }
   };
 
   var pages = {
-    async create(parent, data) {
+    create(parent, data) {
       if (parent === null || parent === "/") {
         return api.post("site/children", data);
       }
@@ -158,46 +161,48 @@
     link(id) {
       return "/" + this.url(id);
     },
-    async get(id, query) {
-      const page = await api.get(this.url(id), query);
-      if (Array.isArray(page.content) === true) {
-        page.content = {};
-      }
-      return page;
+    get(id, query) {
+      return api.get(this.url(id), query).then(page => {
+        if (Array.isArray(page.content) === true) {
+          page.content = {};
+        }
+        return page;
+      });
     },
-    async preview(id) {
-      const page = await this.get(id, { select: "previewUrl" });
-      return page.previewUrl;
+    preview(id) {
+      return this.get(id, { select: "previewUrl" }).then(page => {
+        return page.previewUrl;
+      });
     },
-    async update(id, data) {
+    update(id, data) {
       return api.patch(this.url(id), data);
     },
-    async children(id, query) {
+    children(id, query) {
       return api.post(this.url(id, "children/search"), query);
     },
-    async files(id, query) {
+    files(id, query) {
       return api.post(this.url(id, "files/search"), query);
     },
-    async delete(id, data) {
+    delete(id, data) {
       return api.delete(this.url(id), data);
     },
-    async slug(id, slug) {
+    slug(id, slug) {
       return api.patch(this.url(id, "slug"), { slug: slug });
     },
-    async title(id, title) {
+    title(id, title) {
       return api.patch(this.url(id, "title"), { title: title });
     },
-    async template(id, template) {
+    template(id, template) {
       return api.patch(this.url(id, "template"), { template: template });
     },
-    async search(parent, query) {
+    search(parent, query) {
       if (parent) {
         return api.post('pages/' + parent.replace('/', '+') + '/children/search?select=id,title,hasChildren', query);
       } else {
         return api.post('site/children/search?select=id,title,hasChildren', query);
       }
     },
-    async status(id, status, position) {
+    status(id, status, position) {
       return api.patch(this.url(id, "status"), {
         status: status,
         position: position
@@ -206,99 +211,101 @@
   };
 
   var roles = {
-    async list() {
+    list() {
       return api.get("roles");
     },
-    async get(name) {
+    get(name) {
       return api.get("roles/" + name);
     }
   };
 
   var system = {
-    async info(options) {
+    info(options) {
       return api.get("system", options);
     },
-    async install(user) {
-      const auth = await api.post("system/install", user);
-      return auth.user;
+    install(user) {
+      return api.post("system/install", user).then(auth => {
+        return auth.user;
+      });
     },
-    async register(info) {
+    register(info) {
       return api.post("system/register", info);
     }
   };
 
   var site = {
-    async get(query) {
+    get(query) {
       return api.get("site", query);
     },
-    async update(data) {
+    update(data) {
       return api.post("site", data);
     },
-    async title(title) {
+    title(title) {
       return api.patch("site/title", { title: title });
     },
-    async children(query) {
+    children(query) {
       return api.post("site/children/search", query);
     },
-    async blueprint() {
+    blueprint() {
       return api.get("site/blueprint");
     },
-    async blueprints() {
+    blueprints() {
       return api.get("site/blueprints");
     }
   };
 
-  var translations = {
-    async list() {
+  var translations$1 = {
+    list() {
       return api.get("translations");
     },
-    async get(locale) {
+    get(locale) {
       return api.get("translations/" + locale);
     },
-    async options() {
-      const translations = await this.list();
-      return translations.data.map(translation => ({
-        value: translation.id,
-        text: translation.name
-      }));
+    options() {
+      return this.list().then(translation => {
+        return translations.data.map(translation => ({
+          value: translation.id,
+          text: translation.name
+        }));
+      });
     }
   };
 
   var users = {
-    async create(data) {
+    create(data) {
       return api.post(this.url(), data);
     },
-    async list(query) {
+    list(query) {
       return api.post(this.url(null, "search"), query);
     },
-    async get(id, query) {
+    get(id, query) {
       return api.get(this.url(id), query);
     },
-    async update(id, data) {
+    update(id, data) {
       return api.patch(this.url(id), data);
     },
-    async delete(id) {
+    delete(id) {
       return api.delete(this.url(id));
     },
-    async changeEmail(id, email) {
+    changeEmail(id, email) {
       return api.patch(this.url(id, "email"), { email: email });
     },
-    async changeLanguage(id, language) {
+    changeLanguage(id, language) {
       return api.patch(this.url(id, "language"), { language: language });
     },
-    async changeName(id, name) {
+    changeName(id, name) {
       return api.patch(this.url(id, "name"), { name: name });
     },
-    async changePassword(id, password) {
+    changePassword(id, password) {
       return api.patch(this.url(id, "password"), { password: password });
     },
-    async changeRole(id, role) {
+    changeRole(id, role) {
       return api.patch(this.url(id, "role"), { role: role });
     },
-    async deleteAvatar(id) {
+    deleteAvatar(id) {
       return api.delete(this.url(id, "avatar"));
     },
-    async blueprint(id) {
+    blueprint(id) {
       return api.get(this.url(id, "blueprint"));
     },
     url(id, path) {
@@ -334,7 +341,7 @@
     roles: roles,
     system: system,
     site: site,
-    translations: translations,
+    translations: translations$1,
     users: users,
     ...request
   };

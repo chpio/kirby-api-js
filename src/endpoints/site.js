@@ -1,22 +1,22 @@
 import api from "../api.js";
 
 export default {
-  async get(query) {
+  get(query) {
     return api.get("site", query);
   },
-  async update(data) {
+  update(data) {
     return api.post("site", data);
   },
-  async title(title) {
+  title(title) {
     return api.patch("site/title", { title: title });
   },
-  async children(query) {
+  children(query) {
     return api.post("site/children/search", query);
   },
-  async blueprint() {
+  blueprint() {
     return api.get("site/blueprint");
   },
-  async blueprints() {
+  blueprints() {
     return api.get("site/blueprints");
   }
 };
