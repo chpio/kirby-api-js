@@ -1,6 +1,12 @@
 import fetch from "cross-fetch";
 import api from "./api.js";
 
+function btoaNode(str) {
+  return Buffer(str, 'binary').toString('base64');
+}
+
+let btoa = window && window.btoa || btoaNode;
+
 export default {
   running: 0,
   request(path, options) {
@@ -15,8 +21,14 @@ export default {
 
     options = api.config.onRequest(options);
 
-    // add the csrf token to every request if it has been set
-    options.headers["x-csrf"] = api.config.csrf;
+    if (api.config.csrf) {
+      // add the csrf token to every request if it has been set
+      options.headers["x-csrf"] = api.config.csrf;
+    } else if (api.config.auth) {
+      let {email, password} = api.config.auth;
+      let auth = btoa(`${email}:${password}`);
+      options.headers["Authorization"] = `Basic ${auth}`;
+    }
 
     api.config.onStart();
     this.running++;
