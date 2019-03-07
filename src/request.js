@@ -1,3 +1,4 @@
+import fetch from "cross-fetch";
 import api from "./api.js";
 
 export default {
