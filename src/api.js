@@ -18,7 +18,7 @@ export default {
     onRequest: options => options,
     onSuccess() {},
     onError(error) {
-      window.console.log(error.message);
+      console.log(error.message);
       throw error;
     }
   },
